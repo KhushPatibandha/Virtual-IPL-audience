@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Home - Brand</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin:700&amp;display=swap">
+    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/fonts/fontawesome5-overrides.min.css">
+    <link rel="stylesheet" href="assets/css/Articles-Cards-images.css">
+    <link rel="stylesheet" href="assets/css/Pretty-Search-Form-.css">
+</head>
+
+<body id="page-top" data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="77">
+    <script>
+        
+        let backup;
+        let SOLD = [];
+        let UNSOLD = [];
+
+        setTimeout(()=>{
+            backup = document.getElementById("maindiv").innerHTML;
+            document.getElementById("soldButton").style = 'color: black'
+            document.getElementById("unsoldButton").style = 'color: white'
+        }, 400)
+        
+        // const keypress =  ()=>{
+            
+
+        //     if(document.getElementById("searchPlayer").value != ""){
+        //         console.log(document.getElementById("searchPlayer").value);
+        //         let temp = [];
+        //         if(document.getElementById("searchPlayer").value != ""){
+        //             for(let int = 1; int<document.getElementById("maindiv").children.length; int++){
+        //                 if(document.getElementById("maindiv").children[int].children[0].children[1].children[0].innerText.toLowerCase().includes(document.getElementById("searchPlayer").value.toLowerCase())){
+        //                     temp[temp.length] = document.getElementById("maindiv").children[int];
+        //                 }
+        //             }
+        //             console.log(temp.length)
+        //             document.getElementById("maindiv").innerHTML = temp[0].innerHTML
+        //             temp.map((val)=>{
+        //                 document.getElementById("maindiv").innerHTML += val.innerHTML
+        //             })
+                    
+        //         }
+        //     }
+        //     else{
+        //         document.getElementById("maindiv").innerHTML = backup.innerHTML
+        //     }
+        // }
+
+        const unsold = ()=>{
+
+            document.getElementById("soldButton").style = 'color: black';
+            document.getElementById("unsoldButton").style = 'color: white';
+            document.getElementById("maindiv").innerHTML = ''
+            UNSOLD.map(async (value)=>{
+                await AddPlayer(value._imageUrl, value._playersName, value._playersCountry, value._playersCategory, value._playersStatus, value._playersBasePrice)
+            })
+        }
+
+        const sold = ()=>{
+
+            document.getElementById("unsoldButton").style = 'color: black'
+            document.getElementById("soldButton").style = 'color: white'
+            document.getElementById("maindiv").innerHTML = ''
+
+            SOLD.map(async (value)=>{
+                await AddPlayer2(value._imageUrl, value._playersName, value._playersCountry, value._playersCategory, value._playersStatus, value._playersBasePrice, value._playersSoldPrice, value._ownedByTeam)
+            })
+
+        }
+
+        const insta = ()=>{
+            window.location = 'https://instagram.com/_pratyagra_'
+        }
+
+
+
+          // Example POST method implementation:
+          async function postData2(url = 'http://localhost:8080/list/team') {
+        // Default options are marked with *
+        const response = await fetch(url, {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+            'Content-Type': 'application/json'
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        });
+            return response.json(); // parses JSON response into native JavaScript objects
+        }
+
+        postData2('http://localhost:8080/list/team')
+        .then((data) => {
+            data.teams.map(async (value, key)=>{
+                console.log(value)
+               await AddTeam(value._teamId, value._teamLeader, value._teamBudget)
+            })
+        });
+
+
+
+        // Example POST method implementation:
+        async function postData(url = 'http://localhost:8080/list') {
+        // Default options are marked with *
+        const response = await fetch(url, {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+            'Content-Type': 'application/json'
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        });
+            return response.json(); // parses JSON response into native JavaScript objects
+        }
+
+        postData('http://localhost:8080/list')
+        .then((data) => {
+            data.map(async (value, key)=>{
+                if(value._playersStatus == 'unsold') {
+                    UNSOLD[UNSOLD.length] = value;
+                }
+                if(value._playersStatus == 'sold') {
+                    SOLD[SOLD.length] = value;
+                }
+                await AddPlayer(value._imageUrl, value._playersName, value._playersCountry, value._playersCategory, value._playersStatus, value._playersBasePrice)
+            })
+        });
+                
+        const AddPlayer2 = (URL, NAME, COUNTRY, CATEGORY, STATUS, BASE, SOLD = "", OWNER = "")=>{
+            console.log(CATEGORY)
+            let categoryImage;
+            if(CATEGORY == "Batsman"){
+                categoryImage = "assets/img/batmans.jpeg"
+            };
+
+            if(CATEGORY == "Bowler"){
+                categoryImage = "assets/img/bowler.jpeg"
+            };
+
+            if(CATEGORY == "All rounder"){
+                categoryImage = "assets/img/all_rounder.png"
+            };
+
+            if(CATEGORY == " Wicket keeper"){
+                categoryImage = "assets/img/wk.jpeg"
+            };
+
+            document.getElementById("maindiv").innerHTML += `<div class="col">
+                    <div class="card"><img class="card-img-top w-100 d-block fit-cover" style="height: 200px;" src="${URL}">
+                        <div class="card-body p-4">
+                            <p class="text-primary card-text mb-0"><strong><span style="color: rgb(0, 0, 0);">${NAME}</span></strong></p>
+                            <h4 class="card-title">Lorem libero donec</h4>
+                            <p class="card-text" style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Sold Price: ${SOLD} <p> Base Price: ${BASE} \n<p style="color: rgb(0, 0, 0);"> Country: ${COUNTRY}<p></span></p>
+                            <div class="d-flex"><img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src=${categoryImage}>
+                                <div>
+                                    <p class="fw-bold mb-0" style="color: rgb(0, 0, 0);">${CATEGORY}</p>
+                                    <p class="text-muted mb-0">${STATUS}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+`
+        }
+        
+        const AddPlayer = (URL, NAME, COUNTRY, CATEGORY, STATUS, BASE)=>{
+            console.log(CATEGORY)
+            let categoryImage;
+            if(CATEGORY == "Batsman"){
+                categoryImage = "assets/img/batmans.jpeg"
+            };
+
+            if(CATEGORY == "Bowler"){
+                categoryImage = "assets/img/bowler.jpeg"
+            };
+
+            if(CATEGORY == "All rounder"){
+                categoryImage = "assets/img/all_rounder.png"
+            };
+
+            if(CATEGORY == " Wicket keeper"){
+                categoryImage = "assets/img/wk.jpeg"
+            };
+
+            document.getElementById("maindiv").innerHTML += `<div class="col">
+                    <div class="card"><img class="card-img-top w-100 d-block fit-cover" style="height: 200px;" src="${URL}">
+                        <div class="card-body p-4">
+                            <p class="text-primary card-text mb-0"><strong><span style="color: rgb(0, 0, 0);">${NAME}</span></strong></p>
+                            <h4 class="card-title">Lorem libero donec</h4>
+                            <p class="card-text" style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Base Price: ${BASE}<p style="color: rgb(0, 0, 0);">Country: ${COUNTRY}<p></span></p>
+                            <div class="d-flex"><img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src=${categoryImage}>
+                                <div>
+                                    <p class="fw-bold mb-0" style="color: rgb(0, 0, 0);">${CATEGORY}</p>
+                                    <p class="text-muted mb-0">${STATUS}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+`
+        }
+        const AddTeam = (TEAM_NUMBER, LEADER, BUDGET)=>{
+            const PERCENT = BUDGET * 100 / 150000000;
+            document.getElementById("teams").innerHTML += `
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body p-4">
+                                <h4 class="card-title"><span style="color: rgb(0, 0, 0);">Team ${TEAM_NUMBER}</span></h4>
+                                <p class="card-text"><span style="color: rgb(0, 0, 0);">${LEADER}'s Team</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-dark" aria-valuenow="20" aria-valuemin="0" aria-valuemax="200" style="width: ${PERCENT}%;">${PERCENT}%</div>
+                                </div>
+                                <p class="card-text"><span style="color: rgb(0, 0, 0);">Budget used</span>
+                                    </p><button class="btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal${TEAM_NUMBER}">View TEAM</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                <div id="modal-open${TEAM_NUMBER}">
+                    <div class="modal fade" role="dialog" tabindex="-1" id="exampleModal${TEAM_NUMBER}" aria-labelledby="exampleModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="background-color: #212529;">
+                                    <h4>${LEADER}'s team</h4><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p style="color: rgb(0, 0, 0);" id="team#1"></p>
+                                </div>
+                                <div class="modal-footer"><button class="btn btn-warning" style="background-color:rgb(255,139,160);" type="button" data-bs-dismiss="modal">Close</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+        }
+    </script>
+    
+    <nav class="navbar navbar-light navbar-expand-md fixed-top" id="mainNav">
+        <div class="container"><a class="navbar-brand" href="#">Pratyagra'22</a>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+
+            </div>
+        </div>
+    </nav>
+    <header class="masthead" style="background-image:url('assets/img/intro-bg.jpg');">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <h1 class="brand-heading">Virtual IPL</h1>
+                        <p class="intro-text">Your dream team, no longer a dream!</p><a class="btn btn-link btn-circle" role="button" href="#about"><i class="fa fa-angle-double-down animated"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="text-center content-section" id="about">
+        <div class="container py-4 py-xl-5">
+            
+            
+            <div class="container py-4 py-xl-5">
+                <div class="row mb-5">
+                    <div class="col-md-8 col-xl-6 text-center mx-auto">
+                        <h2>tEAMS</h2>
+                        <p class="w-lg-50">Inspect teams and their budget</p>
+                    </div>
+                </div>
+                <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3" id="teams">
+
+
+            </div>
+            
+
+
+        </div>
+    </section>
+    
+    <section class="text-center download-section content-section" id="download" style="background-image:url('assets/img/downloads-bg.jpg');">
+        <div class="container py-4 py-xl-5">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <p class="w-lg-50"></p><button onclick="unsold()" id='unsoldButton' class="btn btn-primary" type="button">Unsold</button><button id='soldButton' onclick="sold()" class="btn btn-primary" type="button" style="margin-left: 19px;">Sold</button>
+                    <p class="w-lg-50">Heres the list of unsold players</p>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="container py-4 py-xl-5">
+            <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3" id="maindiv">
+
+            
+            </div>
+        </div>
+        
+        <div class="container py-4 py-xl-5">
+        </div>
+    </section>
+    
+    <section class="text-center content-section" id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2>Contact us</h2>
+                    <p>Follow pratyagra on Instagram</p>
+                    <ul class="list-inline banner-social-buttons">
+                        <li onclick="insta()" class="list-inline-item">&nbsp;<button class="btn btn-primary btn-lg btn-default" type="button"><i class="fa fa-instagram fa-fw"></i><span class="network-name">&nbsp; Instagram</span></button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="map-clean"></div>
+    <footer>
+    </footer>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/grayscale.js"></script>
+</body>
+
+</html>
