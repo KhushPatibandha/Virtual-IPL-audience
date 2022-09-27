@@ -83,7 +83,7 @@
 
 
           // Example POST method implementation:
-          async function postData2(url = 'http://localhost:8080/list/team') {
+          async function postData2(url = 'https://new-virtual-ipl.mantragohil.repl.co/list/team') {
         // Default options are marked with *
         const response = await fetch(url, {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -100,7 +100,7 @@
             return response.json(); // parses JSON response into native JavaScript objects
         }
 
-        postData2('http://localhost:8080/list/team')
+        postData2('https://new-virtual-ipl.mantragohil.repl.co/list/team')
         .then((data) => {
             data.teams.map(async (value, key)=>{
                 console.log(value)
@@ -111,7 +111,7 @@
 
 
         // Example POST method implementation:
-        async function postData(url = 'http://localhost:8080/list') {
+        async function postData(url = 'https://new-virtual-ipl.mantragohil.repl.co/list') {
         // Default options are marked with *
         const response = await fetch(url, {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -128,7 +128,7 @@
             return response.json(); // parses JSON response into native JavaScript objects
         }
 
-        postData('http://localhost:8080/list')
+        postData('https://new-virtual-ipl.mantragohil.repl.co/list')
         .then((data) => {
             data.map(async (value, key)=>{
                 if(value._playersStatus == 'unsold') {
