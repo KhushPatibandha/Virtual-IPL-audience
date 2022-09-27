@@ -103,12 +103,10 @@
         postData2('https://new-virtual-ipl.mantragohil.repl.co/list/team')
         .then((data) => {
             data.teams.map(async (value, key)=>{
-                console.log(value)
+                console.log(value);
                await AddTeam(value._teamId, value._teamLeader, value._teamBudget)
             })
         });
-
-
 
         // Example POST method implementation:
         async function postData(url = 'https://new-virtual-ipl.mantragohil.repl.co/list') {
@@ -178,7 +176,25 @@
                 
 `
         }
-        
+        const reply = (id)=>{
+            console.log(id)
+            let noder;
+            fetch(`http://localhost:8080/list/team-player?team=${id}`, {
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                redirect: 'follow', // manual, *follow, error
+                referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            }).then(result => result.json((e)=>{
+                console.log({e})
+            }))
+            document.getElementById(`team${id}`).innerText = noder;
+        }
+
         const AddPlayer = (URL, NAME, COUNTRY, CATEGORY, STATUS, BASE)=>{
             console.log(CATEGORY)
             let categoryImage;
@@ -216,8 +232,9 @@
                 
 `
         }
+
         const AddTeam = (TEAM_NUMBER, LEADER, BUDGET)=>{
-            const PERCENT = BUDGET * 100 / 150000000;
+            const PERCENT = BUDGET * 100 / 500000000;
             document.getElementById("teams").innerHTML += `
                     <div class="col">
                         <div class="card">
@@ -228,7 +245,7 @@
                                     <div class="progress-bar bg-dark" aria-valuenow="20" aria-valuemin="0" aria-valuemax="200" style="width: ${PERCENT}%;">${PERCENT}%</div>
                                 </div>
                                 <p class="card-text"><span style="color: rgb(0, 0, 0);">Budget used</span>
-                                    </p><button class="btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal${TEAM_NUMBER}">View TEAM</button>
+                                    </p><button id="${TEAM_NUMBER}" class="btn btn-dark" type="button" data-bs-toggle="modal" onClick="reply(this.id)" data-bs-target="#exampleModal${TEAM_NUMBER}">View TEAM</button>
                             </div>
                         </div>
                     </div>
@@ -241,8 +258,8 @@
                                 <div class="modal-header" style="background-color: #212529;">
                                     <h4>${LEADER}'s team</h4><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body">
-                                    <p style="color: rgb(0, 0, 0);" id="team#1"></p>
+                                <div id="team${TEAM_NUMBER}" class="modal-body" style="color: rgb(0, 0, 0);">
+                                    <p style="color: rgb(0, 0, 0);" id="team#1"></p>    
                                 </div>
                                 <div class="modal-footer"><button class="btn btn-warning" style="background-color:rgb(255,139,160);" type="button" data-bs-dismiss="modal">Close</button></div>
                             </div>
