@@ -70,8 +70,9 @@
             document.getElementById("maindiv").innerHTML = ''
 
             SOLD.map(async (value)=>{
+                console.log({value:value._playersSoldPrice})
                 await AddPlayer2(value._imageUrl, value._playersName, value._playersCountry, value._playersCategory, value._playersStatus, value._playersBasePrice, value._playersSoldPrice, value._ownedByTeam)
-            })
+            });
 
         }
 
